@@ -7,6 +7,7 @@ import { ConnectionStatus, IconDirection, MovieVote } from './types';
 import { format, parseISO } from 'date-fns';
 import SearchBar from './components/SearchBar';
 import MovieTable from './components/MovieTable';
+import { handleVotesReceived } from './util';
 
 const App: React.FC = () => {
   const [movies, setMovies] = useState<MovieVote[]>([]);
@@ -27,11 +28,14 @@ const App: React.FC = () => {
             description: movie.description,
             totalVotes: 0,
             lastUpdated: '',
-            direction: null,
           }))
         );
 
-        await signalRService.startConnection(token, handleVotesReceived);
+        await signalRService.startConnection(token, (votes) => {
+          const updatedMovies = handleVotesReceived(votes, movies);
+          setMovies(updatedMovies);
+          setLastReceiveTime(new Date());
+        });
         setConnectionStatus(ConnectionStatus.Connected);
       } catch (error) {
         console.error('Initialization error:', error);
@@ -46,32 +50,32 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleVotesReceived = (votes: Vote[]) => {
-    console.table(votes);
+  // const handleVotesReceived = (votes: Vote[]) => {
+  //   console.table(votes);
 
-    setLastReceiveTime(new Date());
+  //   setLastReceiveTime(new Date());
 
-    setMovies((prevMovies) =>
-      prevMovies.map((movie) => {
-        const vote = votes.find((v) => v.itemId === movie.id);
-        if (vote) {
-          return {
-            ...movie,
-            totalVotes: movie.totalVotes + vote.itemCount,
-            lastUpdated: format(
-              parseISO(vote.generatedTime),
-              'dd/MM/yyyy HH:mm:ss'
-            ),
-            direction:
-              movie.totalVotes < vote.itemCount
-                ? IconDirection.Up
-                : IconDirection.Down,
-          };
-        }
-        return movie;
-      })
-    );
-  };
+  //   setMovies((prevMovies) =>
+  //     prevMovies.map((movie) => {
+  //       const vote = votes.find((v) => v.itemId === movie.id);
+  //       if (vote) {
+  //         return {
+  //           ...movie,
+  //           totalVotes: movie.totalVotes + vote.itemCount,
+  //           lastUpdated: format(
+  //             parseISO(vote.generatedTime),
+  //             'dd/MM/yyyy HH:mm:ss'
+  //           ),
+  //           direction:
+  //             movie.totalVotes < vote.itemCount
+  //               ? IconDirection.Up
+  //               : IconDirection.Down,
+  //         };
+  //       }
+  //       return movie;
+  //     })
+  //   );
+  // };
 
   const handleSearch = (query: string) => {
     query
@@ -98,7 +102,9 @@ const App: React.FC = () => {
       });
     }
 
-    handleVotesReceived(testVotes);
+    const updatedMovies = handleVotesReceived(testVotes, movies);
+    setMovies(updatedMovies);
+    setLastReceiveTime(new Date());
   };
 
   return (

@@ -30,7 +30,7 @@ const MovieTable: React.FC<MovieVoteProps> = ({ movies }) => {
     },
     {
       name: 'Icon',
-      cell: (row: MovieVote) => <IconCol direction={row.direction || null} />,
+      cell: (row: MovieVote) => <IconCol direction={row.direction} />,
     },
   ];
 

@@ -8,11 +8,12 @@ export enum ConnectionStatus {
 export enum IconDirection {
   Up = 'up',
   Down = 'down',
+  Remains = 'remains',
 }
 export interface MovieVote extends Movie {
   id: number;
   description: string;
   totalVotes: number;
   lastUpdated: string;
-  direction?: IconDirection | null;
+  direction?: IconDirection;
 }
