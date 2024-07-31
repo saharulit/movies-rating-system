@@ -1,21 +1,27 @@
 import { API_BASE_URL } from './consts';
 
-export const login = async (
-  username: string = 'test',
-  password: string = 'test123'
-) => {
-  const response = await fetch(`${API_BASE_URL}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
+export class LoginService {
+  private readonly LOGIN_URL = `${API_BASE_URL}/login`;
 
-  if (!response.ok) {
-    throw new Error('Login failed');
+  async login(
+    username: string = 'test',
+    password: string = 'test123'
+  ): Promise<string> {
+    const response = await fetch(this.LOGIN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+
+    const data = await response.json();
+    return data.token;
   }
+}
 
-  const data = await response.json();
-  return data.token;
-};
+export default new LoginService();

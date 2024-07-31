@@ -1,16 +1,26 @@
-import { API_BASE_URL } from "./consts";
+import { API_BASE_URL } from './consts';
 
-export const getMovies = async (token: string) => {
-  const response = await fetch(`${API_BASE_URL}/GetMovies`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export interface Movie {
+  id: number;
+  description: string;
+}
+export class MovieService {
+  private readonly MOVIE_URL = `${API_BASE_URL}/GetMovies`;
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch movies');
+  async getMovies(token: string): Promise<Movie[]> {
+    const response = await fetch(this.MOVIE_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch movies');
+    }
+
+    const data = await response.json();
+    return data;
   }
+}
 
-  const data = await response.json();
-  return data;
-};
+export default new MovieService();
