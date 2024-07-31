@@ -5,10 +5,9 @@ import { TABLE_COLUMNS } from '../services/consts';
 
 interface MovieTableProps {
   movies: Movie[];
-  onMovieSelect: (movieId: number) => void;
 }
 
-const MovieTable: React.FC<MovieTableProps> = ({ movies, onMovieSelect }) => {
+const MovieTable: React.FC<MovieTableProps> = ({ movies }) => {
   return (
     <DataTable
       title="Movie List"
