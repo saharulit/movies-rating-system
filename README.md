@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# movies-rating-system
-=======
 # Movies Rating System
 
 The Movies Rating System is an online application that allows users to track votes for the most popular movies. It displays the voting progress in real-time, ensuring performance and responsiveness.
