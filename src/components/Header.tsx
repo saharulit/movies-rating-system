@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 interface HeaderProps {
   connectionStatus: ConnectionStatus;
-  lastReceivedTime: Date;
+  lastReceivedTime: Date | null;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -21,9 +21,12 @@ const Header: React.FC<HeaderProps> = ({
         <span style={{ color: statusColor }}>{connectionStatus}</span>
       </div>
       <div>
-        <span>
-          Last Received Data: {format(lastReceivedTime, 'dd/MM/yyyy HH:mm:ss')}
-        </span>
+        {lastReceivedTime && (
+          <span>
+            Last Received Data:{' '}
+            {format(lastReceivedTime, 'dd/MM/yyyy HH:mm:ss')}
+          </span>
+        )}
       </div>
     </header>
   );
