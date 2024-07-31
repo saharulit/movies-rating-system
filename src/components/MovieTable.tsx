@@ -1,36 +1,36 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Movie } from '../services/movie';
-
-interface MovieTable extends Movie {
-  totalVotes: number;
-  lastUpdated: string;
-}
-interface MovieTableProps {
-  movies: MovieTable[];
+import { MovieVote } from '../types';
+import IconCol from './IconCol';
+interface MovieVoteProps {
+  movies: MovieVote[];
 }
 
-const MovieTable: React.FC<MovieTableProps> = ({ movies }) => {
-  const columns: TableColumn<MovieTable>[] = [
+const MovieTable: React.FC<MovieVoteProps> = ({ movies }) => {
+  const columns: TableColumn<MovieVote>[] = [
     {
       name: 'Movie ID',
-      selector: (row: MovieTable) => row.id,
+      selector: (row: MovieVote) => row.id,
       sortable: true,
     },
     {
       name: 'Movie description',
-      selector: (row: MovieTable) => row.description,
+      selector: (row: MovieVote) => row.description,
       sortable: true,
     },
     {
       name: 'Total votes',
-      selector: (row: MovieTable) => row.totalVotes,
+      selector: (row: MovieVote) => row.totalVotes,
       sortable: true,
     },
     {
       name: 'Last updated time',
-      selector: (row: MovieTable) => row.lastUpdated,
+      selector: (row: MovieVote) => row.lastUpdated,
       sortable: true,
+    },
+    {
+      name: 'Icon',
+      cell: (row: MovieVote) => <IconCol direction={row.direction || null} />,
     },
   ];
 
