@@ -23,6 +23,7 @@ class SignalRService {
         accessTokenFactory: () => token,
       })
       .configureLogging(signalR.LogLevel.Information)
+      .withAutomaticReconnect()
       .build();
 
     this.connection.on('DataReceived', onVoteReceived);
