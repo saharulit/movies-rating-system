@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import signalRService from './services/singleR';
+import signalRService, { Vote } from './services/singleR';
 import loginService from './services/login';
 import movieService from './services/movie';
 import Header from './components/Header';
@@ -7,6 +7,7 @@ import { ConnectionStatus, MovieVote } from './types';
 import SearchBar from './components/SearchBar';
 import MovieTable from './components/MovieTable';
 import { handleVotesReceived } from './util';
+import MovieChart from './components/MovieChart';
 
 const App: React.FC = () => {
   const [movies, setMovies] = useState<MovieVote[]>([]);
@@ -15,6 +16,8 @@ const App: React.FC = () => {
   );
   const [lastReceivedTime, setLastReceiveTime] = useState<Date | null>(null);
   const [token, setToken] = useState<string>('');
+  const [selectedMovie, setSelectedMovie] = useState<MovieVote | null>(null);
+  const [votes, setVotes] = useState<Vote[]>([]);
 
   useEffect(() => {
     const login = async () => {
@@ -49,11 +52,13 @@ const App: React.FC = () => {
   useEffect(() => {
     if (movies.length > 0) {
       try {
-        signalRService.startConnection(token, (votes) => {
+        signalRService.startConnection(token, (newVotes) => {
+          console.table(newVotes);
           setMovies((prevMovies) => {
-            const updatedMovies = handleVotesReceived(votes, prevMovies);
+            const updatedMovies = handleVotesReceived(newVotes, prevMovies);
             return updatedMovies;
           });
+          setVotes((prevVotes) => [...newVotes, ...prevVotes]);
           setConnectionStatus(ConnectionStatus.Connected);
           setLastReceiveTime(new Date());
         });
@@ -67,7 +72,6 @@ const App: React.FC = () => {
       };
     }
   }, [movies, token]);
-
   const handleSearch = (query: string) => {
     query
       ? setMovies(
@@ -79,7 +83,7 @@ const App: React.FC = () => {
   };
 
   const handleSelectMovie = (rowData: MovieVote) => {
-    console.log(rowData);
+    setSelectedMovie(rowData);
   };
 
   return (
@@ -90,6 +94,13 @@ const App: React.FC = () => {
       />
       <SearchBar onSearch={handleSearch} />
       <MovieTable movies={movies} onMovieSelect={handleSelectMovie} />
+      {votes && (
+        <MovieChart
+          votes={votes
+            .filter((vote) => vote.itemId === selectedMovie?.id)
+            .slice(0, 20)}
+        />
+      )}
     </div>
   );
 };
