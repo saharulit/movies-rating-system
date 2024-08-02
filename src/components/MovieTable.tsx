@@ -4,9 +4,10 @@ import { MovieVote } from '../types';
 import IconCol from './IconCol';
 interface MovieVoteProps {
   movies: MovieVote[];
+  onMovieSelect: (row: MovieVote) => void;
 }
 
-const MovieTable: React.FC<MovieVoteProps> = ({ movies }) => {
+const MovieTable: React.FC<MovieVoteProps> = ({ movies, onMovieSelect }) => {
   const columns: TableColumn<MovieVote>[] = [
     {
       name: 'Movie ID',
@@ -35,7 +36,13 @@ const MovieTable: React.FC<MovieVoteProps> = ({ movies }) => {
   ];
 
   return (
-    <DataTable title="Movie List" columns={columns} data={movies} pagination />
+    <DataTable
+      title="Movie List"
+      columns={columns}
+      data={movies}
+      pagination
+      onRowClicked={onMovieSelect}
+    />
   );
 };
 

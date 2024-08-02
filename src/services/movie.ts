@@ -5,7 +5,8 @@ export interface Movie {
   description: string;
 }
 export class MovieService {
-  private readonly MOVIE_URL = `${API_BASE_URL}/GetMovies`;
+  private readonly API_URL = `${API_BASE_URL}/api/admin`;
+  private readonly MOVIE_URL = `${this.API_URL}/GetMovies`;
 
   async getMovies(token: string): Promise<Movie[]> {
     const response = await fetch(this.MOVIE_URL, {

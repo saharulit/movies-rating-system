@@ -18,9 +18,11 @@ class SignalRService {
   ) {
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
         accessTokenFactory: () => token,
       })
-      // .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(signalR.LogLevel.Information)
       .build();
 
     this.connection.on('DataReceived', onVoteReceived);

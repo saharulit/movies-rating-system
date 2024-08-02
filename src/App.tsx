@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import signalRService, { Vote } from './services/singleR';
+import signalRService from './services/singleR';
 import loginService from './services/login';
 import movieService from './services/movie';
 import Header from './components/Header';
-import { ConnectionStatus, IconDirection, MovieVote } from './types';
-import { format, parseISO } from 'date-fns';
+import { ConnectionStatus, MovieVote } from './types';
 import SearchBar from './components/SearchBar';
 import MovieTable from './components/MovieTable';
 import { handleVotesReceived } from './util';
@@ -15,67 +14,59 @@ const App: React.FC = () => {
     ConnectionStatus.Disconnected
   );
   const [lastReceivedTime, setLastReceiveTime] = useState<Date | null>(null);
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
-    const initialize = async () => {
+    const login = async () => {
       try {
-        const token = await loginService.login();
-        const moviesList = await movieService.getMovies(token);
-
-        setMovies(
-          moviesList.map((movie) => ({
-            id: movie.id,
-            description: movie.description,
-            totalVotes: 0,
-            lastUpdated: '',
-          }))
-        );
-
-        await signalRService.startConnection(token, (votes) => {
-          const updatedMovies = handleVotesReceived(votes, movies);
-          setMovies(updatedMovies);
-          setLastReceiveTime(new Date());
-        });
-        setConnectionStatus(ConnectionStatus.Connected);
+        const loginToke = await loginService.login();
+        setToken(loginToke);
       } catch (error) {
-        console.error('Initialization error:', error);
-        setConnectionStatus(ConnectionStatus.Disconnected);
+        console.error('Login error: ', error);
       }
     };
-
-    initialize();
-
-    return () => {
-      signalRService.stopConnection();
-    };
+    login();
   }, []);
 
-  // const handleVotesReceived = (votes: Vote[]) => {
-  //   console.table(votes);
+  useEffect(() => {
+    const getMovies = async () => {
+      try {
+        const moviesList = await movieService.getMovies(token);
+        const updatedMovies = moviesList.map((movie) => ({
+          id: movie.id,
+          description: movie.description,
+          totalVotes: 0,
+          lastUpdated: '',
+        }));
+        setMovies(updatedMovies);
+      } catch (error) {
+        console.log('getMovies error: ', error);
+      }
+    };
+    getMovies();
+  }, [token]);
 
-  //   setLastReceiveTime(new Date());
+  useEffect(() => {
+    if (movies.length > 0) {
+      try {
+        signalRService.startConnection(token, (votes) => {
+          setMovies((prevMovies) => {
+            const updatedMovies = handleVotesReceived(votes, prevMovies);
+            return updatedMovies;
+          });
+          setConnectionStatus(ConnectionStatus.Connected);
+          setLastReceiveTime(new Date());
+        });
+      } catch (error) {
+        console.error('signalRService error: ', error);
+        setConnectionStatus(ConnectionStatus.Disconnected);
+      }
 
-  //   setMovies((prevMovies) =>
-  //     prevMovies.map((movie) => {
-  //       const vote = votes.find((v) => v.itemId === movie.id);
-  //       if (vote) {
-  //         return {
-  //           ...movie,
-  //           totalVotes: movie.totalVotes + vote.itemCount,
-  //           lastUpdated: format(
-  //             parseISO(vote.generatedTime),
-  //             'dd/MM/yyyy HH:mm:ss'
-  //           ),
-  //           direction:
-  //             movie.totalVotes < vote.itemCount
-  //               ? IconDirection.Up
-  //               : IconDirection.Down,
-  //         };
-  //       }
-  //       return movie;
-  //     })
-  //   );
-  // };
+      return () => {
+        signalRService.stopConnection();
+      };
+    }
+  }, [movies, token]);
 
   const handleSearch = (query: string) => {
     query
@@ -87,24 +78,8 @@ const App: React.FC = () => {
       : setMovies(movies);
   };
 
-  const getRandomInt = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const handleTestButtonClick = () => {
-    const testVotes: Vote[] = [];
-
-    for (let i = 0; i < 5; i++) {
-      testVotes.push({
-        itemId: getRandomInt(1, 20),
-        itemCount: getRandomInt(1, 50),
-        generatedTime: new Date().toISOString(),
-      });
-    }
-
-    const updatedMovies = handleVotesReceived(testVotes, movies);
-    setMovies(updatedMovies);
-    setLastReceiveTime(new Date());
+  const handleSelectMovie = (rowData: MovieVote) => {
+    console.log(rowData);
   };
 
   return (
@@ -114,10 +89,7 @@ const App: React.FC = () => {
         connectionStatus={connectionStatus}
       />
       <SearchBar onSearch={handleSearch} />
-      <MovieTable movies={movies} />
-      <button onClick={handleTestButtonClick}>
-        Test Handle Votes Received
-      </button>
+      <MovieTable movies={movies} onMovieSelect={handleSelectMovie} />
     </div>
   );
 };

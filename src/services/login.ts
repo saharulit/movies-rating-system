@@ -1,7 +1,8 @@
 import { API_BASE_URL } from './consts';
 
 export class LoginService {
-  private readonly LOGIN_URL = `${API_BASE_URL}/login`;
+  private readonly API_URL = `${API_BASE_URL}/api/admin`;
+  private readonly LOGIN_URL = `${this.API_URL}/login`;
 
   async login(
     username: string = 'test',
