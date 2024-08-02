@@ -17,7 +17,9 @@ const Header: React.FC<HeaderProps> = ({
         <span>Status: </span>
         <span
           className={
-            ConnectionStatus.Connected ? 'text-green-700' : 'text-red-700	'
+            connectionStatus === ConnectionStatus.Connected
+              ? 'text-green-700'
+              : 'text-red-700	'
           }
         >
           {connectionStatus}
