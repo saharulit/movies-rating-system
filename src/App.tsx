@@ -87,20 +87,23 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <Header
         lastReceivedTime={lastReceivedTime}
         connectionStatus={connectionStatus}
       />
-      <SearchBar onSearch={handleSearch} />
-      <MovieTable movies={movies} onMovieSelect={handleSelectMovie} />
-      {votes && (
-        <MovieChart
-          votes={votes
-            .filter((vote) => vote.itemId === selectedMovie?.id)
-            .slice(0, 20)}
-        />
-      )}
+      <div className="p-4 flex flex-col gap-2">
+        <h2 className="font-semibold text-xl">Movie Table</h2>
+        <SearchBar onSearch={handleSearch} />
+        <MovieTable movies={movies} onMovieSelect={handleSelectMovie} />
+        {votes && (
+          <MovieChart
+            votes={votes
+              .filter((vote) => vote.itemId === selectedMovie?.id)
+              .slice(0, 20)}
+          />
+        )}
+      </div>
     </div>
   );
 };

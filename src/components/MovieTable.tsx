@@ -41,7 +41,6 @@ const MovieTable: React.FC<MovieVoteProps> = ({ movies, onMovieSelect }) => {
 
   return (
     <DataTable
-      title="Movie List"
       columns={columns}
       data={movies}
       pagination

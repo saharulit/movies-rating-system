@@ -11,14 +11,17 @@ const Header: React.FC<HeaderProps> = ({
   connectionStatus,
   lastReceivedTime,
 }) => {
-  const statusColor =
-    connectionStatus === ConnectionStatus.Connected ? 'green' : 'red';
-
   return (
-    <header>
+    <header className="bg-gray-100 p-4">
       <div>
         <span>Status: </span>
-        <span style={{ color: statusColor }}>{connectionStatus}</span>
+        <span
+          className={
+            ConnectionStatus.Connected ? 'text-green-700' : 'text-red-700	'
+          }
+        >
+          {connectionStatus}
+        </span>
       </div>
       <div>
         {lastReceivedTime && (
