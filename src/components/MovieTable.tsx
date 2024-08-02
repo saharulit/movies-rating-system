@@ -2,6 +2,7 @@ import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { MovieVote } from '../types';
 import IconCol from './IconCol';
+import numeral from 'numeral';
 interface MovieVoteProps {
   movies: MovieVote[];
   onMovieSelect: (row: MovieVote) => void;
@@ -23,6 +24,9 @@ const MovieTable: React.FC<MovieVoteProps> = ({ movies, onMovieSelect }) => {
       name: 'Total votes',
       selector: (row: MovieVote) => row.totalVotes,
       sortable: true,
+      cell: (row: MovieVote) => (
+        <div>{numeral(row.totalVotes).format('0a').toUpperCase()}</div>
+      ),
     },
     {
       name: 'Last updated time',
