@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import signalRService, { Vote } from './services/singleR';
 import loginService from './services/login';
 import movieService from './services/movie';
+
 import Header from './components/Header';
-import { ConnectionStatus, MovieVote } from './types';
+import MovieChart from './components/MovieChart';
 import SearchBar from './components/SearchBar';
 import MovieTable from './components/MovieTable';
+import { ConnectionStatus, MovieVote } from './types';
 import { handleVotesReceived } from './util';
-import MovieChart from './components/MovieChart';
 
 const App: React.FC = () => {
   const [movies, setMovies] = useState<MovieVote[]>([]);
