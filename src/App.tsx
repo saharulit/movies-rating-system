@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [token, setToken] = useState<string>('');
   const [selectedMovie, setSelectedMovie] = useState<MovieVote | null>(null);
   const [votes, setVotes] = useState<Vote[]>([]);
+  const [queryString, setQueryString] = useState<string>('');
 
   useEffect(() => {
     const login = async () => {
@@ -54,7 +55,6 @@ const App: React.FC = () => {
     if (movies.length > 0) {
       try {
         signalRService.startConnection(token, (newVotes) => {
-          console.table(newVotes);
           setMovies((prevMovies) => {
             const updatedMovies = handleVotesReceived(newVotes, prevMovies);
             return updatedMovies;
@@ -73,15 +73,6 @@ const App: React.FC = () => {
       };
     }
   }, [movies, token]);
-  const handleSearch = (query: string) => {
-    query
-      ? setMovies(
-          movies.filter((movie) =>
-            movie.description.toLowerCase().includes(query.toLowerCase())
-          )
-        )
-      : setMovies(movies);
-  };
 
   const handleSelectMovie = (rowData: MovieVote) => {
     setSelectedMovie(rowData);
@@ -95,13 +86,19 @@ const App: React.FC = () => {
       />
       <div className="p-4 flex flex-col gap-2">
         <h2 className="font-semibold text-xl">Movie Table</h2>
-        <SearchBar onSearch={handleSearch} />
-        <MovieTable movies={movies} onMovieSelect={handleSelectMovie} />
+        <SearchBar onSearch={(searchString) => setQueryString(searchString)} />
+        <MovieTable
+          movies={movies.filter((movie) =>
+            movie.description.toLowerCase().includes(queryString.toLowerCase())
+          )}
+          onMovieSelect={handleSelectMovie}
+        />
         {votes && (
           <MovieChart
             votes={votes
               .filter((vote) => vote.itemId === selectedMovie?.id)
               .slice(0, 20)}
+            movie={selectedMovie}
           />
         )}
       </div>
