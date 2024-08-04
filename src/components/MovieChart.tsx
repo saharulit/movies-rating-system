@@ -2,19 +2,21 @@ import React from 'react';
 import { Chart } from 'react-google-charts';
 import { Vote } from '../services/singleR';
 import { format } from 'date-fns';
+import { Movie } from 'src/services/movie';
 
 interface MovieChartProps {
   votes: Vote[];
+  movie: Movie | null;
 }
 
-const MovieChart: React.FC<MovieChartProps> = ({ votes }) => {
+const MovieChart: React.FC<MovieChartProps> = ({ votes, movie }) => {
   const data = [
     ['Time', 'Votes'],
     ...votes.map((vote) => [format(new Date(), 'HH:mm:ss'), vote.itemCount]),
   ];
 
   const options = {
-    title: 'Votes Over Time',
+    title: `Votes Over Time for ${movie?.description}`,
     curveType: 'function',
     legend: { position: 'bottom' },
     hAxis: {
